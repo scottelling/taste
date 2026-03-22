@@ -58,6 +58,88 @@ const DOMAIN_BASE = {
   product_design:[ 0.0, -0.6, -0.7,  0.6, -0.5, -0.1,  0.5, -0.4, -0.5,  0.3, -0.3,  0.9],
   interiors:     [ 0.5, -0.2,  0.1,  0.5,  0.4,  0.1,  0.6,  0.0, -0.3,  0.0,  0.3,  0.5],
 };
+// ─── Training Cards ───────────────────────────────────────────────────────────
+const TRAINING_CARDS = [
+  // IDEAS
+  { type:"idea", id:"i01", text:"Constraints produce creativity.", category:"craft" },
+  { type:"idea", id:"i02", text:"Systems outlast strategies.", category:"thinking" },
+  { type:"idea", id:"i03", text:"The solo operator is a legitimate power structure.", category:"work" },
+  { type:"idea", id:"i04", text:"Conviction matters more than consensus.", category:"values" },
+  { type:"idea", id:"i05", text:"Ship ugly, then make it beautiful.", category:"craft" },
+  { type:"idea", id:"i06", text:"Taste is a competitive advantage.", category:"work" },
+  { type:"idea", id:"i07", text:"Identity is architected, not discovered.", category:"thinking" },
+  { type:"idea", id:"i08", text:"Leverage compounds. Effort doesn\u2019t.", category:"work" },
+  { type:"idea", id:"i09", text:"The best tools disappear.", category:"craft" },
+  { type:"idea", id:"i10", text:"What you remove defines you as much as what you add.", category:"craft" },
+  { type:"idea", id:"i11", text:"Most people optimize for visibility. Build for depth.", category:"values" },
+  { type:"idea", id:"i12", text:"Simplicity on the far side of complexity.", category:"thinking" },
+  { type:"idea", id:"i13", text:"The gap between appearance and reality is where all the interesting stuff lives.", category:"thinking" },
+  { type:"idea", id:"i14", text:"Attention is the raw material of meaning.", category:"values" },
+  { type:"idea", id:"i15", text:"Execution is the strategy.", category:"work" },
+  { type:"idea", id:"i16", text:"Speed is a design choice.", category:"craft" },
+  { type:"idea", id:"i17", text:"The map is not the territory.", category:"thinking" },
+  { type:"idea", id:"i18", text:"Form follows function. Function follows meaning.", category:"craft" },
+
+  // REFERENCES
+  { type:"reference", id:"r01", name:"Stanley Kubrick", descriptor:"Filmmaker", domain:"film", note:"Visual control as meaning" },
+  { type:"reference", id:"r02", name:"Dieter Rams", descriptor:"Industrial Designer", domain:"product_design", note:"10 principles of good design" },
+  { type:"reference", id:"r03", name:"Le Corbusier", descriptor:"Architect", domain:"architecture", note:"Machine for living in" },
+  { type:"reference", id:"r04", name:"Paul Rand", descriptor:"Graphic Designer", domain:"graphic_design", note:"Logic and intuition in tension" },
+  { type:"reference", id:"r05", name:"Hiroshi Sugimoto", descriptor:"Photographer", domain:"art", note:"Time made visible" },
+  { type:"reference", id:"r06", name:"Rick Owens", descriptor:"Fashion Designer", domain:"fashion", note:"Darkness as elegance" },
+  { type:"reference", id:"r07", name:"Wim Wenders", descriptor:"Filmmaker", domain:"film", note:"Road as philosophy" },
+  { type:"reference", id:"r08", name:"Kenya Hara", descriptor:"Designer", domain:"graphic_design", note:"Emptiness as design language" },
+  { type:"reference", id:"r09", name:"Rem Koolhaas", descriptor:"Architect", domain:"architecture", note:"Architecture as cultural critique" },
+  { type:"reference", id:"r10", name:"Agnes Martin", descriptor:"Painter", domain:"art", note:"Repetition as transcendence" },
+  { type:"reference", id:"r11", name:"Jony Ive", descriptor:"Product Designer", domain:"product_design", note:"Material honesty" },
+  { type:"reference", id:"r12", name:"Tadao Ando", descriptor:"Architect", domain:"architecture", note:"Concrete, light, silence" },
+  { type:"reference", id:"r13", name:"Peter Saville", descriptor:"Graphic Designer", domain:"graphic_design", note:"Typography as emotion" },
+  { type:"reference", id:"r14", name:"Ingmar Bergman", descriptor:"Filmmaker", domain:"film", note:"The face as landscape" },
+  { type:"reference", id:"r15", name:"Massimo Vignelli", descriptor:"Designer", domain:"graphic_design", note:"The Vignelli canon" },
+  { type:"reference", id:"r16", name:"Herzog & de Meuron", descriptor:"Architecture Studio", domain:"architecture", note:"Materiality as identity" },
+  { type:"reference", id:"r17", name:"Wolfgang Tillmans", descriptor:"Photographer", domain:"art", note:"The vernacular as sacred" },
+  { type:"reference", id:"r18", name:"Neri Oxman", descriptor:"Designer & Architect", domain:"product_design", note:"Nature as blueprint" },
+
+  // CONTRASTS
+  { type:"contrast", id:"c01", optionA:"Minimal",   optionB:"Maximal",     dim:1,  aVal:-1,   bVal:1   },
+  { type:"contrast", id:"c02", optionA:"Systems",   optionB:"Stories",     dim:6,  aVal:0.8,  bVal:-0.8 },
+  { type:"contrast", id:"c03", optionA:"Gut",       optionB:"Data",        dim:9,  aVal:0.5,  bVal:-0.5 },
+  { type:"contrast", id:"c04", optionA:"Dark",      optionB:"Light",       dim:3,  aVal:-1,   bVal:1   },
+  { type:"contrast", id:"c05", optionA:"Analog",    optionB:"Digital",     dim:10, aVal:1,    bVal:-1  },
+  { type:"contrast", id:"c06", optionA:"Sparse",    optionB:"Dense",       dim:1,  aVal:-0.8, bVal:0.8 },
+  { type:"contrast", id:"c07", optionA:"Warm",      optionB:"Cool",        dim:0,  aVal:1,    bVal:-1  },
+  { type:"contrast", id:"c08", optionA:"Craft",     optionB:"Scale",       dim:6,  aVal:-0.3, bVal:0.9 },
+  { type:"contrast", id:"c09", optionA:"Depth",     optionB:"Breadth",     dim:1,  aVal:0.5,  bVal:-0.5 },
+  { type:"contrast", id:"c10", optionA:"Geometric", optionB:"Organic",     dim:2,  aVal:-1,   bVal:1   },
+  { type:"contrast", id:"c11", optionA:"Textured",  optionB:"Smooth",      dim:4,  aVal:1,    bVal:-1  },
+  { type:"contrast", id:"c12", optionA:"Vibrant",   optionB:"Muted",       dim:5,  aVal:1,    bVal:-1  },
+  { type:"contrast", id:"c13", optionA:"Fast",      optionB:"Considered",  dim:11, aVal:0.7,  bVal:-0.3 },
+  { type:"contrast", id:"c14", optionA:"Solo",      optionB:"Collective",  dim:8,  aVal:-0.5, bVal:0.5 },
+  { type:"contrast", id:"c15", optionA:"Timeless",  optionB:"Contemporary",dim:10, aVal:0.5,  bVal:-0.5 },
+  { type:"contrast", id:"c16", optionA:"Raw",       optionB:"Refined",     dim:4,  aVal:0.9,  bVal:-0.7 },
+  { type:"contrast", id:"c17", optionA:"Structured",optionB:"Intuitive",   dim:9,  aVal:-0.6, bVal:0.6 },
+  { type:"contrast", id:"c18", optionA:"Abstract",  optionB:"Literal",     dim:9,  aVal:0.9,  bVal:-0.9 },
+
+  // QUOTES
+  { type:"quote", id:"q01", text:"Have nothing in your house that you do not know to be useful, or believe to be beautiful.", author:"William Morris" },
+  { type:"quote", id:"q02", text:"Good design is as little design as possible.", author:"Dieter Rams" },
+  { type:"quote", id:"q03", text:"Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away.", author:"Antoine de Saint-Exup\u00e9ry" },
+  { type:"quote", id:"q04", text:"Style is knowing who you are, what you want to say, and not giving a damn.", author:"Orson Welles" },
+  { type:"quote", id:"q05", text:"The details are not the details. They make the design.", author:"Charles Eames" },
+  { type:"quote", id:"q06", text:"Everything should be made as simple as possible, but not simpler.", author:"Albert Einstein" },
+  { type:"quote", id:"q07", text:"The enemy of art is the absence of limitations.", author:"Orson Welles" },
+  { type:"quote", id:"q08", text:"Design is not just what it looks like. Design is how it works.", author:"Steve Jobs" },
+  { type:"quote", id:"q09", text:"In the beginner\u2019s mind there are many possibilities. In the expert\u2019s mind there are few.", author:"Shunryu Suzuki" },
+  { type:"quote", id:"q10", text:"The future is already here \u2014 it\u2019s just not evenly distributed.", author:"William Gibson" },
+  { type:"quote", id:"q11", text:"Architecture is frozen music.", author:"Schopenhauer" },
+  { type:"quote", id:"q12", text:"Less is more.", author:"Mies van der Rohe" },
+  { type:"quote", id:"q13", text:"The most important decisions are not what to do, but what not to do.", author:"Steve Jobs" },
+  { type:"quote", id:"q14", text:"Simplicity is the consequence of refined emotions.", author:"Jean d\u2019Alembert" },
+  { type:"quote", id:"q15", text:"Every tool is a weapon if you hold it right.", author:"Ani DiFranco" },
+  { type:"quote", id:"q16", text:"You can\u2019t use up creativity. The more you use, the more you have.", author:"Maya Angelou" },
+  { type:"quote", id:"q17", text:"The role of the designer is that of a good, thoughtful host anticipating the needs of guests.", author:"Charles Eames" },
+  { type:"quote", id:"q18", text:"Whoever controls the media controls the mind.", author:"Jim Morrison" },
+];
 function generateEmbedding(image, domain) {
   const base = [...(DOMAIN_BASE[domain] || new Array(12).fill(0))];
   const tags = (image.tags || []).map(t => (t.title || "").toLowerCase());
@@ -96,6 +178,30 @@ function computeCentroid(embeddings) {
   const avg = sum.map(v => v / embeddings.length);
   const mag = Math.sqrt(avg.reduce((s, x) => s + x * x, 0)) || 1;
   return avg.map(x => x / mag);
+}
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    const j = Math.abs(s) % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generateDailyFeed(seenIds = new Set()) {
+  const today = new Date().toISOString().split("T")[0];
+  const seed = today.split("-").reduce((acc, n) => acc * 31 + parseInt(n), 7);
+  const byType = { idea:[], reference:[], contrast:[], quote:[] };
+  TRAINING_CARDS.forEach(c => { if (!seenIds.has(c.id)) byType[c.type]?.push(c); });
+  const feed = [
+    ...seededShuffle(byType.idea,      seed    ).slice(0,5),
+    ...seededShuffle(byType.reference, seed+1  ).slice(0,5),
+    ...seededShuffle(byType.contrast,  seed+2  ).slice(0,5),
+    ...seededShuffle(byType.quote,     seed+3  ).slice(0,5),
+  ];
+  return seededShuffle(feed, seed+4);
 }
 function buildExportProfile(tasteProfile, likedImages, images) {
   const domainCounts = {};
@@ -275,6 +381,222 @@ function ImageCard({ image, onLike, matchScore, isNew }) {
           padding: "1px 6px", fontSize: 10, color: "#000", fontWeight: 700, letterSpacing: "0.08em",
         }}>NEW</div>
       )}
+    </div>
+  );
+}
+// ─── Training Components ──────────────────────────────────────────────────────
+function SignalButtons({ signal, onSignal, color="#BB86FC" }) {
+  const btns = [
+    { val:"pass", label:"\u2014", flex:1 },
+    { val:"like", label:"\u2665", flex:2 },
+    { val:"strong", label:"\u2726", flex:1 },
+  ];
+  return (
+    <div style={{ display:"flex", gap:10 }}>
+      {btns.map(b => (
+        <button key={b.val} onClick={() => onSignal(b.val)} style={{
+          flex:b.flex, padding:"12px 0",
+          background: signal===b.val ? color+"22" : "rgba(255,255,255,0.03)",
+          border:`1px solid ${signal===b.val ? color+"66" : "rgba(255,255,255,0.07)"}`,
+          borderRadius:10, cursor:"pointer",
+          color: signal===b.val ? color : "rgba(255,255,255,0.3)",
+          fontSize:18, fontWeight:b.val==="strong"?700:400,
+          transition:"all 0.15s",
+        }}>{b.label}</button>
+      ))}
+    </div>
+  );
+}
+
+function IdeaCard({ card, signal, onSignal }) {
+  const catColor = { craft:"#03DAC6", thinking:"#BB86FC", work:"#69F0AE", values:"#F48FB1" };
+  const color = catColor[card.category] || "#BB86FC";
+  return (
+    <div style={{
+      background:"#1E1E2E", border:"1px solid rgba(255,255,255,0.08)",
+      borderRadius:16, padding:"32px 24px", position:"relative", overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute", top:-40, right:-40, width:140, height:140,
+        borderRadius:"50%", background:color+"10", filter:"blur(40px)", pointerEvents:"none",
+      }}/>
+      <div style={{ fontSize:11, letterSpacing:"0.12em", color, marginBottom:20, textTransform:"uppercase" }}>
+        {card.category}
+      </div>
+      <div style={{ fontSize:22, fontWeight:600, lineHeight:1.4, color:"#E0E0E0", marginBottom:32, letterSpacing:"-0.02em" }}>
+        {card.text}
+      </div>
+      <SignalButtons signal={signal} onSignal={onSignal} color={color} />
+    </div>
+  );
+}
+
+function ReferenceCard({ card, signal, onSignal }) {
+  const accent = ACCENT[card.domain] || "#BB86FC";
+  const d = DOMAINS.find(x => x.id === card.domain);
+  return (
+    <div style={{
+      background:"#1E1E2E", border:"1px solid rgba(255,255,255,0.08)",
+      borderRadius:16, padding:"28px 24px", position:"relative", overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute", bottom:-20, right:-20, width:120, height:120,
+        borderRadius:"50%", background:accent+"12", filter:"blur(30px)", pointerEvents:"none",
+      }}/>
+      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:20 }}>
+        <div style={{ fontSize:11, letterSpacing:"0.1em", color:accent }}>
+          {d?.emoji} {d?.label?.toUpperCase()}
+        </div>
+        <div style={{ fontSize:10, color:"rgba(255,255,255,0.2)", letterSpacing:"0.08em" }}>REFERENCE</div>
+      </div>
+      <div style={{ fontSize:26, fontWeight:700, color:"#E0E0E0", marginBottom:6, letterSpacing:"-0.02em" }}>
+        {card.name}
+      </div>
+      <div style={{ fontSize:13, color:"rgba(255,255,255,0.4)", marginBottom:8 }}>{card.descriptor}</div>
+      {card.note && (
+        <div style={{ fontSize:12, color:"rgba(255,255,255,0.25)", fontStyle:"italic", marginBottom:28 }}>
+          "{card.note}"
+        </div>
+      )}
+      <SignalButtons signal={signal} onSignal={onSignal} color={accent} />
+    </div>
+  );
+}
+
+function ContrastCard({ card, signal, onSignal }) {
+  const opts = [
+    { key:"A", label:card.optionA, color:"#BB86FC" },
+    { key:"B", label:card.optionB, color:"#03DAC6" },
+  ];
+  return (
+    <div style={{
+      background:"#1E1E2E", border:"1px solid rgba(255,255,255,0.08)",
+      borderRadius:16, padding:"28px 24px",
+    }}>
+      <div style={{ fontSize:11, letterSpacing:"0.12em", color:"rgba(255,255,255,0.3)", marginBottom:24, textTransform:"uppercase" }}>
+        Which pulls you?
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:16 }}>
+        {opts.map(opt => (
+          <button key={opt.key} onClick={() => onSignal(opt.key)} style={{
+            padding:"28px 16px",
+            background: signal===opt.key ? opt.color+"18" : "rgba(255,255,255,0.03)",
+            border:`1px solid ${signal===opt.key ? opt.color+"66" : "rgba(255,255,255,0.08)"}`,
+            borderRadius:12, cursor:"pointer",
+            color: signal===opt.key ? opt.color : "rgba(255,255,255,0.5)",
+            fontSize:20, fontWeight:700, letterSpacing:"-0.02em",
+            transition:"all 0.2s",
+            transform: signal===opt.key ? "scale(1.02)" : "scale(1)",
+          }}>{opt.label}</button>
+        ))}
+      </div>
+      {signal && (
+        <div style={{ textAlign:"center", fontSize:12, color:"rgba(255,255,255,0.25)" }}>
+          {signal==="A" ? card.optionA : card.optionB} resonates
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuoteCard({ card, signal, onSignal }) {
+  return (
+    <div style={{
+      background:"#1E1E2E", border:"1px solid rgba(255,255,255,0.08)",
+      borderRadius:16, padding:"32px 24px", position:"relative", overflow:"hidden",
+    }}>
+      <div style={{
+        position:"absolute", top:16, left:20, fontSize:80,
+        color:"rgba(187,134,252,0.06)", fontFamily:"Georgia, serif",
+        lineHeight:1, pointerEvents:"none", userSelect:"none",
+      }}>"</div>
+      <div style={{ fontSize:10, letterSpacing:"0.14em", color:"rgba(255,255,255,0.2)", marginBottom:20, textTransform:"uppercase" }}>
+        Quote
+      </div>
+      <div style={{ fontSize:18, lineHeight:1.65, color:"#E0E0E0", fontStyle:"italic", marginBottom:20, position:"relative", zIndex:1 }}>
+        {card.text}
+      </div>
+      <div style={{ fontSize:12, color:"rgba(255,255,255,0.35)", marginBottom:28, letterSpacing:"0.04em" }}>
+        {"\u2014"} {card.author}
+      </div>
+      <SignalButtons signal={signal} onSignal={onSignal} color="#BB86FC" />
+    </div>
+  );
+}
+
+function TrainingCard({ card, signal, onSignal }) {
+  const props = { card, signal, onSignal };
+  if (card.type==="idea")      return <IdeaCard {...props} />;
+  if (card.type==="reference") return <ReferenceCard {...props} />;
+  if (card.type==="contrast")  return <ContrastCard {...props} />;
+  if (card.type==="quote")     return <QuoteCard {...props} />;
+  return null;
+}
+
+function FeedComplete({ feed, signals }) {
+  const liked = feed.filter(c => ["like","strong","A","B"].includes(signals[c.id]?.value)).length;
+  const strong = feed.filter(c => signals[c.id]?.value === "strong").length;
+  return (
+    <div style={{ padding:"80px 24px", textAlign:"center" }}>
+      <div style={{ fontSize:44, marginBottom:16 }}>\u2726</div>
+      <div style={{ fontSize:20, fontWeight:700, marginBottom:8, color:"#E0E0E0" }}>Feed complete</div>
+      <div style={{ fontSize:14, color:"rgba(255,255,255,0.4)", lineHeight:1.7, marginBottom:32 }}>
+        {liked} signals recorded today.
+        {strong > 0 && <><br />{strong} strong {strong===1?"resonance":"resonances"}.</>}
+      </div>
+      <div style={{
+        background:"rgba(187,134,252,0.08)", border:"1px solid rgba(187,134,252,0.2)",
+        borderRadius:12, padding:"14px 20px",
+        fontSize:13, color:"rgba(255,255,255,0.4)",
+      }}>
+        Come back tomorrow for a new feed
+      </div>
+    </div>
+  );
+}
+
+function TrainingFeed({ trainingSignals, onSignal }) {
+  const today = new Date().toISOString().split("T")[0];
+  const [feed] = useState(() => {
+    const seenIds = new Set(
+      Object.entries(trainingSignals)
+        .filter(([,s]) => s.date === today)
+        .map(([id]) => id)
+    );
+    return generateDailyFeed(seenIds);
+  });
+
+  const completed = feed.filter(c => trainingSignals[c.id]?.date === today).length;
+  const total = feed.length;
+
+  if (completed === total) return <FeedComplete feed={feed} signals={trainingSignals} />;
+
+  return (
+    <div style={{ padding:"16px 12px 100px" }}>
+      <div style={{ marginBottom:20 }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:10 }}>
+          <div style={{ fontSize:13, fontWeight:600, color:"#E0E0E0" }}>Today's Training</div>
+          <div style={{ fontSize:12, color:"rgba(255,255,255,0.35)", fontFamily:"monospace" }}>{completed}/{total}</div>
+        </div>
+        <div style={{ height:3, background:"rgba(255,255,255,0.06)", borderRadius:2 }}>
+          <div style={{
+            height:"100%", borderRadius:2,
+            background:"linear-gradient(90deg, #BB86FC, #03DAC6)",
+            width:`${(completed/total)*100}%`, transition:"width 0.4s ease",
+          }}/>
+        </div>
+        <div style={{ fontSize:11, color:"rgba(255,255,255,0.2)", marginTop:8 }}>{today}</div>
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+        {feed.map(card => (
+          <TrainingCard
+            key={card.id}
+            card={card}
+            signal={trainingSignals[card.id]?.value}
+            onSignal={val => onSignal(card.id, val, card)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -631,6 +953,7 @@ export default function TasteEngine() {
   const [showAddRef, setShowAddRef] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [newImageIds, setNewImageIds] = useState(new Set());
+  const [trainingSignals, setTrainingSignals] = useState({});
   const loaderRef = useRef(null);
   const domainRotateRef = useRef(0);
   const likedImages = images.filter(img => img.liked);
@@ -643,6 +966,7 @@ export default function TasteEngine() {
     }
     if (saved.tasteProfile) setTasteProfile(saved.tasteProfile);
     if (saved.columns) setColumns(saved.columns);
+    if (saved.trainingSignals) setTrainingSignals(saved.trainingSignals);
   }, []);
   // Initial load if empty
   useEffect(() => {
@@ -659,8 +983,8 @@ export default function TasteEngine() {
   }, [images]);
   // Persist
   useEffect(() => {
-    if (images.length > 0) saveState({ images, tasteProfile, columns, pageMap });
-  }, [images, tasteProfile, columns]);
+    if (images.length > 0) saveState({ images, tasteProfile, columns, pageMap, trainingSignals });
+  }, [images, tasteProfile, columns, trainingSignals]);
   // Infinite scroll
   useEffect(() => {
     if (!loaderRef.current) return;
@@ -726,6 +1050,22 @@ export default function TasteEngine() {
       liked: true,
       source: "reference",
     }, ...prev]);
+  }
+  function handleTrainingSignal(cardId, value, card) {
+    const today = new Date().toISOString().split("T")[0];
+    setTrainingSignals(prev => ({
+      ...prev,
+      [cardId]: { value, date: today, timestamp: Date.now() },
+    }));
+    // Contrast cards directly nudge the taste centroid
+    if (card.type === "contrast" && tasteProfile) {
+      const val = value === "A" ? card.aVal : card.bVal;
+      const nudged = tasteProfile.map((v, i) =>
+        i === card.dim ? Math.max(-1, Math.min(1, v + val * 0.15)) : v
+      );
+      const mag = Math.sqrt(nudged.reduce((s, x) => s + x*x, 0)) || 1;
+      setTasteProfile(nudged.map(x => x / mag));
+    }
   }
   // Feed logic
   const displayedImages = (() => {
@@ -801,6 +1141,7 @@ export default function TasteEngine() {
           {[
             { id: "discover", label: "Discover" },
             { id: "foryou", label: "For You" },
+            { id: "train", label: "Train" },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
               padding: "10px 14px", background: "transparent", border: "none",
@@ -856,51 +1197,59 @@ export default function TasteEngine() {
               ⚠ {error} — Check your Unsplash API key.
             </div>
           )}
-          {/* For You locked */}
-          {activeTab === "foryou" && !tasteProfile && (
-            <div style={{ textAlign: "center", padding: "80px 24px" }}>
-              <div style={{ fontSize: 44, marginBottom: 16 }}>◎</div>
-              <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Unlock Your Feed</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 15, lineHeight: 1.6 }}>
-                Like {LIKES_FOR_PROFILE} images in Discover<br />to activate your personalized feed
-              </div>
-            </div>
+          {/* Training Feed */}
+          {activeTab === "train" && (
+            <TrainingFeed trainingSignals={trainingSignals} onSignal={handleTrainingSignal} />
           )}
-          {/* Skeleton loading */}
-          {loading && (
-            <div style={{ columnCount: columns, columnGap: 8 }}>
-              {Array.from({ length: 16 }).map((_, i) => (
-                <div key={i} style={{ marginBottom: 8, breakInside: "avoid" }}>
-                  <SkeletonCard height={[200, 260, 170, 230, 190, 280][i % 6]} />
+          {activeTab !== "train" && (
+            <>
+              {/* For You locked */}
+              {activeTab === "foryou" && !tasteProfile && (
+                <div style={{ textAlign: "center", padding: "80px 24px" }}>
+                  <div style={{ fontSize: 44, marginBottom: 16 }}>◎</div>
+                  <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Unlock Your Feed</div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 15, lineHeight: 1.6 }}>
+                    Like {LIKES_FOR_PROFILE} images in Discover<br />to activate your personalized feed
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
-          {/* Grid */}
-          {!loading && displayedImages.length > 0 && (
-            <div style={{ columnCount: columns, columnGap: 8 }}>
-              {displayedImages.map(img => (
-                <div key={img.id} style={{ marginBottom: 8, breakInside: "avoid" }}>
-                  <ImageCard
-                    image={img}
-                    onLike={handleLike}
-                    matchScore={img.matchScore}
-                    isNew={newImageIds.has(img.id)}
-                  />
+              )}
+              {/* Skeleton loading */}
+              {loading && (
+                <div style={{ columnCount: columns, columnGap: 8 }}>
+                  {Array.from({ length: 16 }).map((_, i) => (
+                    <div key={i} style={{ marginBottom: 8, breakInside: "avoid" }}>
+                      <SkeletonCard height={[200, 260, 170, 230, 190, 280][i % 6]} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-          {/* Infinite scroll trigger */}
-          <div ref={loaderRef} style={{
-            height: 48, display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            {loadingMore && (
-              <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 12, letterSpacing: "0.08em" }}>
-                LOADING MORE
+              )}
+              {/* Grid */}
+              {!loading && displayedImages.length > 0 && (
+                <div style={{ columnCount: columns, columnGap: 8 }}>
+                  {displayedImages.map(img => (
+                    <div key={img.id} style={{ marginBottom: 8, breakInside: "avoid" }}>
+                      <ImageCard
+                        image={img}
+                        onLike={handleLike}
+                        matchScore={img.matchScore}
+                        isNew={newImageIds.has(img.id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Infinite scroll trigger */}
+              <div ref={loaderRef} style={{
+                height: 48, display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {loadingMore && (
+                  <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 12, letterSpacing: "0.08em" }}>
+                    LOADING MORE
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
         {/* Taste panel — sticky sidebar */}
         {showPanel && (
