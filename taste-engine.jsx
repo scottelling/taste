@@ -97,6 +97,64 @@ function computeCentroid(embeddings) {
   const mag = Math.sqrt(avg.reduce((s, x) => s + x * x, 0)) || 1;
   return avg.map(x => x / mag);
 }
+function buildExportProfile(tasteProfile, likedImages, images) {
+  const domainCounts = {};
+  likedImages.forEach(img => {
+    domainCounts[img.domain] = (domainCounts[img.domain] || 0) + 1;
+  });
+  const total = likedImages.length || 1;
+  const domainAffinities = Object.fromEntries(
+    Object.entries(domainCounts).map(([k, v]) => [k, parseFloat((v / total).toFixed(2))])
+  );
+
+  const dimLabels = ["warmth","complexity","organic","brightness","texture","saturation","structural","natural","human","abstract","vintage","contemporary"];
+  const styleFingerprint = {};
+  if (tasteProfile) {
+    tasteProfile.forEach((val, i) => {
+      styleFingerprint[dimLabels[i]] = parseFloat(val.toFixed(3));
+    });
+  }
+
+  // Generate plain-English summary from top dims
+  const descriptions = [];
+  if (tasteProfile) {
+    const sorted = tasteProfile.map((v, i) => ({ dim: dimLabels[i], val: v })).sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
+    const top = sorted.slice(0, 3);
+    top.forEach(({ dim, val }) => {
+      const map = {
+        warmth:       val > 0 ? "warm tonal ranges" : "cool, restrained palettes",
+        complexity:   val > 0 ? "layered, dense compositions" : "minimal, stripped-back forms",
+        organic:      val > 0 ? "organic, natural shapes" : "geometric precision",
+        brightness:   val > 0 ? "bright, airy spaces" : "dark, moody atmospheres",
+        texture:      val > 0 ? "raw texture and materiality" : "smooth, polished surfaces",
+        saturation:   val > 0 ? "vibrant, saturated color" : "muted, desaturated tones",
+        structural:   val > 0 ? "strong architectural structure" : "fluid, unstructured forms",
+        natural:      val > 0 ? "the natural world" : "built environments",
+        human:        val > 0 ? "human presence and portraiture" : "absence of the human figure",
+        abstract:     val > 0 ? "abstract and conceptual work" : "representational imagery",
+        vintage:      val > 0 ? "analog, vintage aesthetics" : "clean contemporary forms",
+        contemporary: val > 0 ? "modern, contemporary design" : "timeless, classical sensibility",
+      };
+      if (map[dim]) descriptions.push(map[dim]);
+    });
+  }
+  const topDomains = Object.entries(domainAffinities).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => k.replace("_", " "));
+
+  const summary = descriptions.length
+    ? `Drawn to ${descriptions.join(", ")}. Primary domains: ${topDomains.join(" and ")}.`
+    : "Still building your aesthetic profile.";
+
+  return {
+    version: "1.0",
+    generated: new Date().toISOString().split("T")[0],
+    source: "taste-engine",
+    embedding_centroid: tasteProfile ? tasteProfile.map(v => parseFloat(v.toFixed(4))) : null,
+    domain_affinities: domainAffinities,
+    style_fingerprint: styleFingerprint,
+    aesthetic_summary: summary,
+    liked_count: likedImages.length,
+  };
+}
 // ─── Unsplash API ─────────────────────────────────────────────────────────────
 async function fetchUnsplashImages(domain, page = 1) {
   const d = DOMAINS.find(x => x.id === domain);
@@ -220,7 +278,141 @@ function ImageCard({ image, onLike, matchScore, isNew }) {
     </div>
   );
 }
-function TastePanel({ tasteProfile, likedImages }) {
+function AestheticDNA({ tasteProfile, likedImages, images }) {
+  const [copied, setCopied] = useState(false);
+  const profile = buildExportProfile(tasteProfile, likedImages, images);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(JSON.stringify(profile, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([JSON.stringify(profile, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `taste-profile-${profile.generated}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div style={{ padding: "16px 16px 32px" }}>
+      {/* Header */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", marginBottom: 6 }}>
+          AESTHETIC DNA
+        </div>
+        <div style={{
+          fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6,
+          background: "rgba(187,134,252,0.06)", border: "1px solid rgba(187,134,252,0.15)",
+          borderRadius: 10, padding: "12px 14px",
+        }}>
+          {profile.aesthetic_summary}
+        </div>
+      </div>
+
+      {/* Domain affinities */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>
+          DOMAIN AFFINITIES
+        </div>
+        {Object.entries(profile.domain_affinities).sort((a, b) => b[1] - a[1]).map(([domain, score]) => {
+          const d = DOMAINS.find(x => x.id === domain);
+          const accent = ACCENT[domain];
+          return (
+            <div key={domain} style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontSize: 12 }}>
+                <span style={{ color: "#E0E0E0" }}>{d?.emoji} {d?.label}</span>
+                <span style={{ color: accent, fontFamily: "monospace" }}>{Math.round(score * 100)}%</span>
+              </div>
+              <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2 }}>
+                <div style={{
+                  height: "100%", borderRadius: 2, background: accent,
+                  width: `${score * 100}%`, transition: "width 0.5s ease",
+                }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Style fingerprint — top 6 dims */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>
+          STYLE FINGERPRINT
+        </div>
+        {Object.entries(profile.style_fingerprint).slice(0, 6).map(([dim, val]) => {
+          const pct = (val + 1) / 2 * 100;
+          return (
+            <div key={dim} style={{ marginBottom: 11 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 12 }}>
+                <span style={{ color: "rgba(255,255,255,0.45)", textTransform: "capitalize" }}>{dim}</span>
+                <span style={{ color: val > 0 ? "#BB86FC" : "#03DAC6", fontFamily: "monospace", fontSize: 11 }}>
+                  {val > 0 ? "+" : ""}{val.toFixed(2)}
+                </span>
+              </div>
+              <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, position: "relative" }}>
+                <div style={{ position: "absolute", left: "50%", top: -1, width: 1, height: 5, background: "rgba(255,255,255,0.15)" }} />
+                <div style={{
+                  height: "100%", borderRadius: 2,
+                  marginLeft: val >= 0 ? "50%" : `${pct}%`,
+                  width: `${Math.abs(val) * 50}%`,
+                  background: val >= 0 ? "#BB86FC" : "#03DAC6",
+                }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Raw JSON preview */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 8 }}>
+          EXPORT SCHEMA · v{profile.version}
+        </div>
+        <pre style={{
+          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: 10, padding: 12, fontSize: 10.5, color: "rgba(255,255,255,0.45)",
+          fontFamily: "monospace", lineHeight: 1.6, overflowX: "auto",
+          maxHeight: 180, overflowY: "auto",
+        }}>
+          {JSON.stringify({ ...profile, embedding_centroid: "[512 dims...]" }, null, 2)}
+        </pre>
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: "flex", gap: 8 }}>
+        <button onClick={handleCopy} style={{
+          flex: 1, padding: "12px 0",
+          background: copied ? "rgba(105,240,174,0.15)" : "rgba(187,134,252,0.12)",
+          border: `1px solid ${copied ? "#69F0AE55" : "#BB86FC44"}`,
+          borderRadius: 10, cursor: "pointer",
+          color: copied ? "#69F0AE" : "#BB86FC",
+          fontSize: 13, fontWeight: 600, transition: "all 0.2s",
+        }}>
+          {copied ? "\u2713 Copied" : "Copy JSON"}
+        </button>
+        <button onClick={handleDownload} style={{
+          flex: 1, padding: "12px 0",
+          background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 10, cursor: "pointer",
+          color: "rgba(255,255,255,0.6)", fontSize: 13,
+        }}>
+          Download
+        </button>
+      </div>
+
+      <div style={{ marginTop: 14, fontSize: 11, color: "rgba(255,255,255,0.2)", textAlign: "center", lineHeight: 1.5 }}>
+        This profile syncs to Duet when connected.<br />Schema version 1.0
+      </div>
+    </div>
+  );
+}
+function TastePanel({ tasteProfile, likedImages, images }) {
+  const [view, setView] = useState("profile");
   if (!tasteProfile) {
     const remaining = Math.max(0, LIKES_FOR_PROFILE - likedImages.length);
     return (
@@ -255,71 +447,92 @@ function TastePanel({ tasteProfile, likedImages }) {
     { label: "Saturation", neg: "Muted",       pos: "Vibrant"   },
   ];
   return (
-    <div style={{ padding: 16, overflowY: "auto" }}>
-      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", marginBottom: 18 }}>
-        TASTE PROFILE · {likedImages.length} LIKES
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* Panel tabs */}
+      <div style={{ display: "flex", borderBottom: "1px solid rgba(255,255,255,0.07)", flexShrink: 0 }}>
+        {[{ id: "profile", label: "Profile" }, { id: "dna", label: "Aesthetic DNA" }].map(t => (
+          <button key={t.id} onClick={() => setView(t.id)} style={{
+            flex: 1, padding: "11px 0", background: "transparent", border: "none",
+            color: view === t.id ? "#BB86FC" : "rgba(255,255,255,0.35)",
+            fontSize: 12, fontWeight: view === t.id ? 600 : 400, cursor: "pointer",
+            borderBottom: `2px solid ${view === t.id ? "#BB86FC" : "transparent"}`,
+            transition: "all 0.2s",
+          }}>{t.label}</button>
+        ))}
       </div>
-      {/* Domain affinity */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>DOMAIN AFFINITY</div>
-        {sortedDomains.map(([domain, count]) => {
-          const accent = ACCENT[domain];
-          const d = DOMAINS.find(x => x.id === domain);
-          return (
-            <div key={domain} style={{ marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontSize: 12 }}>
-                <span style={{ color: "#E0E0E0" }}>{d?.emoji} {d?.label}</span>
-                <span style={{ color: "rgba(255,255,255,0.35)" }}>{count}</span>
+
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        {view === "profile" ? (
+          <div style={{ padding: 16 }}>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.12em", marginBottom: 18 }}>
+              TASTE PROFILE · {likedImages.length} LIKES
+            </div>
+            {/* Domain affinity */}
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>DOMAIN AFFINITY</div>
+              {sortedDomains.map(([domain, count]) => {
+                const accent = ACCENT[domain];
+                const d = DOMAINS.find(x => x.id === domain);
+                return (
+                  <div key={domain} style={{ marginBottom: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontSize: 12 }}>
+                      <span style={{ color: "#E0E0E0" }}>{d?.emoji} {d?.label}</span>
+                      <span style={{ color: "rgba(255,255,255,0.35)" }}>{count}</span>
+                    </div>
+                    <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2 }}>
+                      <div style={{
+                        height: "100%", borderRadius: 2, background: accent,
+                        width: `${(count / maxCount) * 100}%`, transition: "width 0.5s ease",
+                      }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Style fingerprint */}
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>STYLE FINGERPRINT</div>
+              {dims.map((dim, i) => {
+                const val = tasteProfile[i];
+                const label = val > 0.3 ? dim.pos : val < -0.3 ? dim.neg : "Balanced";
+                const pct = (val + 1) / 2 * 100;
+                return (
+                  <div key={i} style={{ marginBottom: 12 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontSize: 12 }}>
+                      <span style={{ color: "rgba(255,255,255,0.5)" }}>{dim.label}</span>
+                      <span style={{ color: "#BB86FC", fontSize: 11 }}>{label}</span>
+                    </div>
+                    <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, position: "relative" }}>
+                      <div style={{ position: "absolute", left: "50%", top: -1, width: 1, height: 5, background: "rgba(255,255,255,0.2)" }} />
+                      <div style={{
+                        height: "100%", borderRadius: 2,
+                        marginLeft: val >= 0 ? "50%" : `${pct}%`,
+                        width: `${Math.abs(val) * 50}%`,
+                        background: val >= 0 ? "#BB86FC" : "#03DAC6",
+                      }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Liked grid */}
+            <div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>
+                LIKED ({likedImages.length})
               </div>
-              <div style={{ height: 3, background: "rgba(255,255,255,0.07)", borderRadius: 2 }}>
-                <div style={{
-                  height: "100%", borderRadius: 2, background: accent,
-                  width: `${(count / maxCount) * 100}%`, transition: "width 0.5s ease",
-                }} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
+                {likedImages.map(img => (
+                  <img key={img.id} src={img.thumb || img.url} alt="" style={{
+                    width: "100%", aspectRatio: "1", objectFit: "cover",
+                    borderRadius: 6, display: "block",
+                  }} />
+                ))}
               </div>
             </div>
-          );
-        })}
-      </div>
-      {/* Style fingerprint */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>STYLE FINGERPRINT</div>
-        {dims.map((dim, i) => {
-          const val = tasteProfile[i];
-          const label = val > 0.3 ? dim.pos : val < -0.3 ? dim.neg : "Balanced";
-          const pct = (val + 1) / 2 * 100;
-          return (
-            <div key={i} style={{ marginBottom: 12 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, fontSize: 12 }}>
-                <span style={{ color: "rgba(255,255,255,0.5)" }}>{dim.label}</span>
-                <span style={{ color: "#BB86FC", fontSize: 11 }}>{label}</span>
-              </div>
-              <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, position: "relative" }}>
-                <div style={{ position: "absolute", left: "50%", top: -1, width: 1, height: 5, background: "rgba(255,255,255,0.2)" }} />
-                <div style={{
-                  height: "100%", borderRadius: 2,
-                  marginLeft: val >= 0 ? "50%" : `${pct}%`,
-                  width: `${Math.abs(val) * 50}%`,
-                  background: val >= 0 ? "#BB86FC" : "#03DAC6",
-                }} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      {/* Liked grid */}
-      <div>
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", marginBottom: 10 }}>
-          LIKED ({likedImages.length})
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
-          {likedImages.map(img => (
-            <img key={img.id} src={img.thumb || img.url} alt="" style={{
-              width: "100%", aspectRatio: "1", objectFit: "cover",
-              borderRadius: 6, display: "block",
-            }} />
-          ))}
-        </div>
+          </div>
+        ) : (
+          <AestheticDNA tasteProfile={tasteProfile} likedImages={likedImages} images={images} />
+        )}
       </div>
     </div>
   );
@@ -699,7 +912,7 @@ export default function TasteEngine() {
             height: "calc(100vh - 160px)",
             overflowY: "auto",
           }}>
-            <TastePanel tasteProfile={tasteProfile} likedImages={likedImages} />
+            <TastePanel tasteProfile={tasteProfile} likedImages={likedImages} images={images} />
           </div>
         )}
       </div>
