@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taste Engine — Cross-Domain Aesthetic Intelligence</title>
+  <meta name="description" content="A cross-domain taste engine that learns your aesthetic identity across architecture, design, fashion, nature, art, film, and more." />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #root { width: 100%; min-height: 100vh; background: #0A0A0A; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+
+  <!-- Polyfill window.storage with localStorage so taste data persists -->
+  <script>
+    window.storage = {
+      async get(key) {
+        try {
+          const val = localStorage.getItem(key);
+          return val !== null ? { key, value: val } : null;
+        } catch { return null; }
+      },
+      async set(key, value) {
+        try {
+          localStorage.setItem(key, value);
+          return { key, value };
+        } catch { return null; }
+      },
+      async delete(key) {
+        try {
+          localStorage.removeItem(key);
+          return { key, deleted: true };
+        } catch { return null; }
+      },
+      async list(prefix) {
+        try {
+          const keys = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (!prefix || k.startsWith(prefix)) keys.push(k);
+          }
+          return { keys };
+        } catch { return { keys: [] }; }
+      }
+    };
+  </script>
+
+  <script type="text/babel" data-type="module" src="taste-engine.jsx"></script>
+  <script type="text/babel">
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    // The JSX file uses export default — Babel will handle it
+    // We need to load it as a module and render
+  </script>
+
+  <!-- Inline loader that fetches and transpiles the JSX -->
+  <script>
+    (async function() {
+      try {
+        const resp = await fetch('taste-engine.jsx');
+        const code = await resp.text();
+
+        // Transform imports to use global React
+        const transformed = code
+          .replace(/import\s+\{([^}]+)\}\s+from\s+["']react["'];?/g, 
+            'const {$1} = React;')
+          .replace(/export\s+default\s+function/, 'function');
+
+        // Find the component name
+        const match = transformed.match(/function\s+(\w+)\s*\(/);
+        const componentName = match ? match[1] : 'TasteEngine';
+
+        const fullCode = transformed + `\nReactDOM.createRoot(document.getElementById('root')).render(React.createElement(${componentName}));`;
+
+        const result = Babel.transform(fullCode, { 
+          presets: ['react'],
+          plugins: []
+        });
+
+        const script = document.createElement('script');
+        script.textContent = result.code;
+        document.body.appendChild(script);
+      } catch (err) {
+        console.error('Failed to load taste engine:', err);
+        document.getElementById('root').innerHTML = '<div style="color:#F48FB1;padding:40px;font-family:monospace;">Error loading Taste Engine: ' + err.message + '</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
