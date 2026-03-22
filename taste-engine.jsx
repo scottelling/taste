@@ -4,7 +4,7 @@ const UNSPLASH_ACCESS_KEY = "PlKD7h9DEFYnOnqcAuUmVEJ1VROMWxnfs4FPCe1ESlM";
 const IMAGES_PER_FETCH = 20;
 const LIKES_FOR_PROFILE = 3;
 const DOMAINS = [
-  { id: "architecture", label: "Architecture", emoji: "🏛", query: "architectural photography minimal brutalist" },
+  { id: "architecture", label: "Architecture", emoji: "\u25A3", query: "architectural photography minimal brutalist" },
   { id: "graphic_design", label: "Graphic Design", emoji: "◉", query: "graphic design poster typography layout" },
   { id: "fashion", label: "Fashion", emoji: "✦", query: "editorial fashion photography minimal" },
   { id: "nature", label: "Nature", emoji: "◈", query: "nature macro abstract botanical" },

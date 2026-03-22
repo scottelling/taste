@@ -65,15 +65,15 @@
         const resp = await fetch('taste-engine.jsx');
         const code = await resp.text();
 
+        // Find the exported component name before transforming
+        const exportMatch = code.match(/export\s+default\s+function\s+(\w+)/);
+        const componentName = exportMatch ? exportMatch[1] : 'TasteEngine';
+
         // Transform imports to use global React
         const transformed = code
-          .replace(/import\s+\{([^}]+)\}\s+from\s+["']react["'];?/g, 
+          .replace(/import\s+\{([^}]+)\}\s+from\s+["']react["'];?/g,
             'const {$1} = React;')
           .replace(/export\s+default\s+function/, 'function');
-
-        // Find the component name
-        const match = transformed.match(/function\s+(\w+)\s*\(/);
-        const componentName = match ? match[1] : 'TasteEngine';
 
         const fullCode = transformed + `\nReactDOM.createRoot(document.getElementById('root')).render(React.createElement(${componentName}));`;
 
